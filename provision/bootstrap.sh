@@ -13,6 +13,8 @@ MOUNT_DIR=/vagrant
 PROVISION_DIR=${MOUNT_DIR}/provision
 CONFIG_FILE=${MOUNT_DIR}/config/odoo.conf
 
+DB_USER=odoo
+DB_PASSWORD=odoo
 # update / upgrade
 sudo yum update -y
 sudo yum upgrade -y
@@ -32,20 +34,19 @@ sudo rpm -Uhv https://nightly.odoo.com/${ODOO_VERSION}/nightly/rpm/odoo_${ODOO_V
 
 # DataBase Setup
 sudo postgresql-setup initdb
-sudo systemctl enable postgresql
-sudo systemctl start postgresql
+sudo systemctl enable postgresql && sudo systemctl start postgresql
+
+# Using default ODOO Pass otherwise verify your config
+sudo -u postgres psql -c "CREATE USER ${DB_USER} WITH password '${DB_PASSWORD}';"
+sudo -u postgres psql -c "ALTER USER ${DB_USER} WITH SUPERUSER;"
 
 # Remove pre-defined config and run custom one delete if exists)
 sudo rm /etc/odoo/odoo.conf \
     && sudo rm -f ${CONFIG_FILE} \
     && sudo cp ${PROVISION_DIR}/odoo.conf.template ${CONFIG_FILE}
 
-# Replace placeholders
-sudo sed -i "s|__HOME__|$MOUNT_DIR|g" ${CONFIG_FILE}
-
-#SIMLINK-it
-sudo ln -s ${CONFIG_FILE} /etc/odoo/odoo.conf
+# Replace placeholders and Symlink-it to odoo def
+sudo sed -i "s|__HOME__|$MOUNT_DIR|g" ${CONFIG_FILE} && sudo ln -s ${CONFIG_FILE} /etc/odoo/odoo.conf
 
 # Run this baby...!
-sudo systemctl enable odoo
-sudo systemctl start odoo
+sudo systemctl enable odoo && sudo systemctl restart odoo
