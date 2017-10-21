@@ -1,0 +1,16 @@
+[options]
+; This is the password that allows database operations:
+; admin_passwd = admin
+addons_path = /usr/lib/python3.6/site-packages/odoo/addons, __HOME__/app/addons-odoo, __HOME__/app/addons-custom
+; ---- ODOO 11 Default DB Config ------
+db_host = False
+db_port = False
+db_user = odoo
+db_password = False
+; ----------- Logger Config -----------
+log_db = False
+list_db = True
+log_level = info
+log_handler = :INFO
+log_db_level = warning
+logfile = /var/log/odoo/odoo.log
